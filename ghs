@@ -1,0 +1,84 @@
+#!/usr/bin/env python
+
+#
+# Author: Johannes Schlatow
+# Date: 2021-07-27
+#
+
+import yaml
+import argparse
+from ghsearch import search, formatter
+
+# argument parsing
+parser = argparse.ArgumentParser(description='Search multiple GitHub repositories.')
+parser.add_argument('--config', type=str, default='config.yaml',
+                    help='path to config yaml file')
+parser.add_argument('--where', type=str, nargs='*',
+                    default=["docs", "issues", "paths", "code", "pull_request", "readme"],
+                    help='restrict search to one or multiple of ["docs","issues","paths","code","pull_requests","readme"]')
+parser.add_argument('--output', type=str, default="text",
+                    help='set output format to one of ["text","tree"]')
+parser.add_argument('terms', type=str, nargs='+',
+                    help='search term(s)')
+
+args = parser.parse_args()
+
+# config parsing
+with open(args.config, "r") as ymlfile:
+    cfg = yaml.safe_load(ymlfile)
+
+token = None
+if 'token' in cfg:
+    token = cfg['token']
+man = search.Manager(cfg['repositories'], token=token)
+
+if __name__ == "__main__":
+    query = ' '.join(args.terms)
+    print("Searching for '%s':\n" % query)
+
+    if "issues" in args.where:
+        issues    = man.find_issues(query)
+    else:
+        issues    = dict()
+
+    if "pr" in args.where:
+        pr        = man.find_pull_requests(query)
+    else:
+        pr        = dict()
+
+    if "code" in args.where:
+        code      = man.find_code(query)
+    else:
+        code      = dict()
+
+    if "readme" in args.where:
+        in_readme = man.find_in_readme(query)
+    else:
+        in_readme = dict()
+
+    if "docs" in args.where:
+        docs      = man.find_docs(query)
+    else:
+        docs      = dict()
+
+    if "paths" in args.where:
+        paths     = man.find_paths(query)
+        readmes   = man.find_readme()
+    else:
+        paths     = dict()
+        readmes   = dict()
+
+    if (args.output == 'tree'):
+        raise NotImplementedError()
+    else:
+        output = formatter.Text(issues=issues,
+                                pr=pr,
+                                code=code,
+                                in_readme=in_readme,
+                                docs=docs,
+                                paths=paths,
+                                readmes=readmes)
+        output.print_summary()
+
+    rem, limit = man.remaining_quota()
+    print("Remaining API quota: %s of %s" % (rem, limit))

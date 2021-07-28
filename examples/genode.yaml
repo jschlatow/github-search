@@ -1,0 +1,123 @@
+repositories:
+  - alias: genode
+    owner: genodelabs
+    name:  genode
+    enabled: yes
+    doc-folder: doc
+  - alias: genode-world
+    owner: genodelabs
+    name:  genode-world
+    enabled: yes
+    issues: no
+    pullrequests: no
+  - alias: genode-foundations
+    owner: nfeske
+    name:  genode-manual
+    doc-folder: foundations
+    enabled: yes
+    code: no
+    issues: no
+    pullrequests: no
+    paths: no
+    readme: no
+  - alias: genode-platforms
+    owner: nfeske
+    name:  genode-manual
+    doc-folder: platforms
+    enabled: yes
+    code: no
+    issues: no
+    pullrequests: no
+    paths: no
+    readme: no
+  - owner:   jschlatow
+    name:    genodian
+    enabled: no
+    paths:   no
+    readme:  no
+    issues:  no
+    pullrequests: no
+  - owner:   nfeske
+    name:    genodian
+    enabled: no
+    paths:   no
+    readme:  no
+    issues:  no
+    pullrequests: no
+  - owner:   chelmuth
+    name:    genodian
+    enabled: no
+    paths:   no
+    readme:  no
+    issues:  no
+    pullrequests: no
+  - owner:   m-stein
+    name:    genodian
+    enabled: no
+    paths:   no
+    readme:  no
+    issues:  no
+    pullrequests: no
+  - owner:   ssumpf
+    name:    genodian
+    enabled: no
+    paths:   no
+    readme:  no
+    issues:  no
+    pullrequests: no
+  - owner:   alex-ab
+    name:    genodian
+    enabled: no
+    paths:   no
+    readme:  no
+    issues:  no
+    pullrequests: no
+  - owner:   skalk
+    name:    genodian
+    enabled: no
+    paths:   no
+    readme:  no
+    issues:  no
+    pullrequests: no
+  - owner:   jklmnn
+    name:    genodian
+    enabled: no
+    paths:   no
+    readme:  no
+    issues:  no
+    pullrequests: no
+  - owner:   gwitmond
+    name:    genodian
+    enabled: no
+    paths:   no
+    readme:  no
+    issues:  no
+    pullrequests: no
+  - owner:   tomga
+    name:    genodian
+    enabled: no
+    paths:   no
+    readme:  no
+    issues:  no
+    pullrequests: no
+  - owner:   ttcoder
+    name:    genodian
+    enabled: no
+    paths:   no
+    readme:  no
+    issues:  no
+    pullrequests: no
+  - owner:   valerius2k
+    name:    genodian
+    enabled: no
+    paths:   no
+    readme:  no
+    issues:  no
+    pullrequests: no
+  - owner:   zorodc
+    name:    genodian
+    enabled: no
+    paths:   no
+    readme:  no
+    issues:  no
+    pullrequests: no
