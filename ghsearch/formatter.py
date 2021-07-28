@@ -5,6 +5,7 @@
 
 from rich.console import Console
 from rich.syntax import Syntax
+from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.tree import Tree as Richtree
 from rich import print
@@ -79,15 +80,30 @@ class Tree:
 
     def _with_matches(self, alias, subtree, res):
         for i in res.items():
-            subsubtree = subtree.add("📄 [link=%s]%s[/link]" % (i.html_url, i.path),
-                                     style=self.styles['match'],
-                                     guide_style=self.guide_styles['match'])
+            if hasattr(i, 'path'):
+                markdown = False
+                subsubtree = subtree.add("📄 [link=%s]%s[/link]" % (i.html_url, i.path),
+                                         style=self.styles['match'],
+                                         guide_style=self.guide_styles['match'])
+            else:
+                markdown = True
+                subsubtree = subtree.add("[link=%s]#%s %s[/link]" % (i.html_url, i.number, i.title),
+                                         style=self.styles['match'],
+                                         guide_style=self.guide_styles['match'])
+
             if 'text_matches' not in i:
                 continue
 
             for match in i.text_matches:
-                subsubtree.add(Panel(Syntax(match.fragment, 'C++', theme='vim', line_numbers=True),
-                                     border_style=self.guide_styles['match']))
+                if match.object_type in {'Issue'}:
+                    continue
+
+                if markdown:
+                    subsubtree.add(Panel(Markdown(match.fragment),
+                                         border_style=self.guide_styles['match']))
+                else:
+                    subsubtree.add(Panel(Syntax(match.fragment, 'C++', theme='vim', line_numbers=True),
+                                         border_style=self.guide_styles['match']))
 
         self._with_link(alias, subtree, res)
 
