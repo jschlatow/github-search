@@ -18,6 +18,8 @@ parser.add_argument('--where', type=str, nargs='*',
                     help='restrict search to one or multiple of ["docs","issues","paths","code","pull_requests","readme"]')
 parser.add_argument('--output', type=str, default="tree",
                     help='set output format to one of ["text","tree"]')
+parser.add_argument('--matches', action='store_true',
+                    help='display matches (if combined with "--output tree")')
 parser.add_argument('terms', type=str, nargs='+',
                     help='search term(s)')
 
@@ -76,7 +78,7 @@ if __name__ == "__main__":
                                 docs=docs,
                                 paths=paths,
                                 readmes=readmes)
-        output.print_summary()
+        output.print_summary(matches=args.matches)
     else:
         output = formatter.Text(query=query,
                                 issues=issues,

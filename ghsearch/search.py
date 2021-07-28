@@ -61,7 +61,7 @@ class GitSearch:
         return list(res)
 
 class Manager:
-    def __init__(self, repos, token=None):
+    def __init__(self, repos, token=None, with_matches=True):
         self.repos = list()
         self.token = token
         self.api   = GhApi(token=token)
@@ -87,7 +87,9 @@ class Manager:
     def _query_single(self, f, query, repo, per_page=10):
         return Result(repo,
                       query,
-                      f(q='%s repo:%s' % (query, repo), per_page=per_page))
+                      f(q='%s repo:%s' % (query, repo),
+                        per_page=per_page,
+                        headers={'Accept' : 'application/vnd.github.v3.text-match+json'}))
 
     def _query_all(self, f, query, repo):
         res = f(q='%s repo:%s' % (query, repo), per_page=100)

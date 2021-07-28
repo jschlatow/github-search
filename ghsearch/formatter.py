@@ -4,6 +4,8 @@
 #
 
 from rich.console import Console
+from rich.syntax import Syntax
+from rich.panel import Panel
 from rich.tree import Tree as Richtree
 from rich import print
 
@@ -32,14 +34,16 @@ class Tree:
                               'code'   : 'bright_red',
                               'docs'   : 'magenta',
                               'readme' : 'yellow',
-                              'paths'  : 'blue'}
+                              'paths'  : 'blue',
+                              'match'  : 'default'}
         self.guide_styles = { 'link'   : 'dim blue',
                               'issues' : 'green',
                               'pr'     : 'dim green',
                               'code'   : 'bright_red',
                               'docs'   : 'magenta',
                               'readme' : 'yellow',
-                              'paths'  : 'blue'}
+                              'paths'  : 'blue',
+                              'match'  : 'dim green'}
 
     def _add_subtree(self, results, stylename, title, details=None):
         if not results:
@@ -73,19 +77,38 @@ class Tree:
             else:
                 subtree.add("📄 %s" % file.path)
 
-    def print_summary(self):
+    def _with_matches(self, alias, subtree, res):
+        for i in res.items():
+            subsubtree = subtree.add("📄 [link=%s]%s[/link]" % (i.html_url, i.path),
+                                     style=self.styles['match'],
+                                     guide_style=self.guide_styles['match'])
+            if 'text_matches' not in i:
+                continue
+
+            for match in i.text_matches:
+                subsubtree.add(Panel(Syntax(match.fragment, 'C++', theme='vim', line_numbers=True),
+                                     border_style=self.guide_styles['match']))
+
+        self._with_link(alias, subtree, res)
+
+    def print_summary(self, matches=False):
+        if matches:
+            details = self._with_matches
+        else:
+            details = self._with_link
+
         self._add_subtree(self.code,   stylename='code',   title='Code',
-                          details=self._with_link)
+                          details=details)
         self._add_subtree(self.docs,   stylename='docs',   title='Documentation',
-                          details=self._with_link)
+                          details=details)
 
         self._add_subtree(self.in_readme, stylename='readme', title='README',
                           details=self._with_file_results)
 
         self._add_subtree(self.issues, stylename='issues', title='Issues',
-                          details=self._with_link)
+                          details=details)
         self._add_subtree(self.pr,     stylename='pr',     title='Pull requests',
-                          details=self._with_link)
+                          details=details)
 
         self._add_subtree(self.paths, stylename='paths',   title='Paths',
                           details=self._with_file_results)
