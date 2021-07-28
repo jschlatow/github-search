@@ -8,6 +8,11 @@ Highlights:
 * special handling for README files
 * configurable
 
+Limitations:
+
+* GitHub search results shouldn't be trusted to be complete.
+* GitHub ignores most special characters in your search query [see](https://docs.github.com/en/github/searching-for-information-on-github/searching-on-github/searching-code#considerations-for-code-search)
+
 # Prerequisites
 
 * Python 3
