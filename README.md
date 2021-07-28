@@ -3,7 +3,7 @@ using the GitHub API.
 
 Highlights:
 
-* search multiple git repositories at once
+* search multiple git repositories at once (issues, pull requests, paths, code)
 * supports multiple output formats
 * special handling for README files
 * configurable
@@ -46,6 +46,9 @@ token: foobar...
 A repository is specified by the mandatory fields `owner` and `name`, which
 you find in the repository's URL (i.e. `https://github.com/{owner}/{name}`).
 
+Optional attributes can be used to switch off certain search categories or to
+disable the repository entirely.
+
 For more details, please have a look at the [examples](examples/).
 
 **Mandatory attributes**
@@ -63,3 +66,32 @@ For more details, please have a look at the [examples](examples/).
 * readme (default: yes)
 * doc-folder: folder containing documentation (for docs search)
 * local-path: local path to git repo (for exact path search and reducing API requests)
+
+## Usage examples
+
+By default, ghs prints a summary of search results.
+The summary contains the total number of matches and a weblink to the full
+search query.
+
+E.g., you can search the genode repositories for the term 'vfs' as follows:
+```
+ghs --config examples/genode.yaml vfs
+```
+
+You can switch on the output of the first 10 text matches in every repository
+via the `--matches` switch.
+Furthermore, you can restrict the search categories by using the `--where` option.
+
+E.g., you can list the first 10 open issues and pull requests that match
+'nic_router' as follows:
+
+```
+ghs --config examples/genode.yaml nic_router is:open --where issues pullrequest --matches
+```
+
+Note, when using a bunch of repositories the, you may easily exhaust the limit
+of 10 (resp. 30) queries per minute.
+If you have a local check out of some repositories, you can circumvent this
+by providing the optional `local-path` attribute.
+When set, ghs will use `git grep` and `git ls-tree` to search README files and
+path names.
