@@ -4,15 +4,105 @@
 #
 
 from rich.console import Console
+from rich.tree import Tree as Richtree
+from rich import print
 
-class Text:
-    def __init__(self, issues=dict(),
+class Tree:
+    def __init__(self, query="",
+                       issues=dict(),
                        pr=dict(),
                        code=dict(),
                        in_readme=dict(),
                        docs=dict(),
                        paths=dict(),
                        readmes=list()):
+        self.issues    = issues
+        self.pr        = pr
+        self.code      = code
+        self.in_readme = in_readme
+        self.docs      = docs
+        self.paths     = paths
+        self.readmes   = readmes
+
+        self.tree = Richtree('"%s"' % query)
+
+        self.styles       = { 'link'   : 'dim blue',
+                              'issues' : 'green',
+                              'pr'     : 'dim green',
+                              'code'   : 'bright_red',
+                              'docs'   : 'magenta',
+                              'readme' : 'yellow',
+                              'paths'  : 'blue'}
+        self.guide_styles = { 'link'   : 'dim blue',
+                              'issues' : 'green',
+                              'pr'     : 'dim green',
+                              'code'   : 'bright_red',
+                              'docs'   : 'magenta',
+                              'readme' : 'yellow',
+                              'paths'  : 'blue'}
+
+    def _add_subtree(self, results, stylename, title, details=None):
+        if not results:
+            return
+
+        subtree = self.tree.add('[underline]%s[/underline]' % title,
+                                style=self.styles[stylename],
+                                guide_style=self.guide_styles[stylename])
+
+        for alias, res in results.items():
+            if res.total_count():
+                subsubtree = subtree.add("%d in %s" % (res.total_count(), alias),
+                                         guide_style=self.guide_styles['link'])
+
+                if details:
+                    details(alias, subsubtree, res)
+
+    def _with_link(self, alias, subtree, res):
+        subtree.add("🌍 [link=%s]%s[/link]" % (res.query_url(), res.query_url()),
+                    style=self.styles['link'])
+
+    def _with_file_results(self, alias, subtree, res):
+        for file in res.items():
+            if file.path[-1] == '/':
+                subsubtree = subtree.add(":file_folder: %s" % file.path)
+                for readme in self.readmes[alias]:
+                    if readme.startswith(file.path):
+                        subsubtree.add("📄 %s" % readme,
+                                       style=self.styles['readme'])
+
+            else:
+                subtree.add("📄 %s" % file.path)
+
+    def print_summary(self):
+        self._add_subtree(self.code,   stylename='code',   title='Code',
+                          details=self._with_link)
+        self._add_subtree(self.docs,   stylename='docs',   title='Documentation',
+                          details=self._with_link)
+
+        self._add_subtree(self.in_readme, stylename='readme', title='README',
+                          details=self._with_file_results)
+
+        self._add_subtree(self.issues, stylename='issues', title='Issues',
+                          details=self._with_link)
+        self._add_subtree(self.pr,     stylename='pr',     title='Pull requests',
+                          details=self._with_link)
+
+        self._add_subtree(self.paths, stylename='paths',   title='Paths',
+                          details=self._with_file_results)
+
+        print(self.tree)
+
+
+class Text:
+    def __init__(self, query="",
+                       issues=dict(),
+                       pr=dict(),
+                       code=dict(),
+                       in_readme=dict(),
+                       docs=dict(),
+                       paths=dict(),
+                       readmes=list()):
+        self.query     = query
         self.issues    = issues
         self.pr        = pr
         self.code      = code
@@ -105,6 +195,8 @@ class Text:
         self.console.print()
 
     def print_summary(self):
+
+        self.console.print("[bold]Searching for '%s':[/bold]\n" % self.query)
 
         self.print_summary_issues()
         self.print_summary_pr()

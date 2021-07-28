@@ -54,9 +54,9 @@ class GitSearch:
 
             end = p.find('/', pos)
             if end == -1:
-                end = len(p)
+                end = len(p) - 1
 
-            res.add(LocalPath(p[0:end], self.path))
+            res.add(LocalPath(p[0:end+1], self.path))
 
         return list(res)
 

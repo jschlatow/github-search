@@ -34,7 +34,6 @@ man = search.Manager(cfg['repositories'], token=token)
 
 if __name__ == "__main__":
     query = ' '.join(args.terms)
-    print("Searching for '%s':\n" % query)
 
     if "issues" in args.where:
         issues    = man.find_issues(query)
@@ -69,9 +68,18 @@ if __name__ == "__main__":
         readmes   = dict()
 
     if (args.output == 'tree'):
-        raise NotImplementedError()
+        output = formatter.Tree(query=query,
+                                issues=issues,
+                                pr=pr,
+                                code=code,
+                                in_readme=in_readme,
+                                docs=docs,
+                                paths=paths,
+                                readmes=readmes)
+        output.print_summary()
     else:
-        output = formatter.Text(issues=issues,
+        output = formatter.Text(query=query,
+                                issues=issues,
                                 pr=pr,
                                 code=code,
                                 in_readme=in_readme,
