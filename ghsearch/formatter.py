@@ -63,8 +63,9 @@ class Tree:
                     details(alias, subsubtree, res)
 
     def _with_link(self, alias, subtree, res):
-        subtree.add("🌍 [link=%s]%s[/link]" % (res.query_url(), res.query_url()),
-                    style=self.styles['link'])
+        if hasattr(res, 'query_url'):
+            subtree.add("🌍 [link=%s]%s[/link]" % (res.query_url(), res.query_url()),
+                        style=self.styles['link'])
 
     def _with_file_results(self, alias, subtree, res):
         for file in res.items():
