@@ -20,6 +20,7 @@ Limitations:
 	* [rich](https://rich.readthedocs.io/)
 	* [ghapi](https://ghapi.fast.ai/)
 	* [requests](https://pypi.org/project/requests/)
+	* [PyYAML](https://pyyaml.org/wiki/PyYAML)
 
 # Configuration
 
