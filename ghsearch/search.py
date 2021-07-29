@@ -25,13 +25,24 @@ class GitSearch:
 
     def _run_git(self, args):
         result = subprocess.run(args, cwd=self.path, capture_output=True,
-                                                     text=True,
-                                                     check=True)
+                                                     text=True)
         return result.stdout
 
     def find_in_readme(self, query):
         res = list()
         args = ['/usr/bin/git', 'grep', '-l', query, '--', '*README']
+        stdout = self._run_git(args)
+        for p in iter(stdout.splitlines()):
+            res.append(LocalPath(p, self.path))
+
+        return res
+
+    def find_code(self, query, path=None):
+        res = list()
+        if path:
+            args = ['/usr/bin/git', 'grep', '-l', query, '--', path]
+        else:
+            args = ['/usr/bin/git', 'grep', '-l', query]
         stdout = self._run_git(args)
         for p in iter(stdout.splitlines()):
             res.append(LocalPath(p, self.path))
@@ -137,16 +148,23 @@ class Manager:
         for r in self.repos:
             if not r['code']: continue
 
-            query = s
-            repo  = r['repo']
+            if 'local-path' in r:
+                expath = None
+                if 'doc-folder' in r:
+                    expath = ':^%s' % r['doc-folder']
+                res[r['alias']] = LocalResult(r['alias'],
+                                              GitSearch(r['local-path']).find_code(s, expath))
+            else:
+                query = s
+                repo  = r['repo']
 
-            if 'doc-folder' in r:
-                query += ' -path:%s' % r['doc-folder']
+                if 'doc-folder' in r:
+                    query += ' -path:%s' % r['doc-folder']
 
-            res[r['alias']] = \
-                self._query_single(self.api.search.code,
-                                   query,
-                                   repo)
+                res[r['alias']] = \
+                    self._query_single(self.api.search.code,
+                                       query,
+                                       repo)
 
         return res
 
@@ -156,13 +174,17 @@ class Manager:
         for r in self.repos:
             if 'doc-folder' not in r: continue
 
-            query = s + ' path:%s' % r['doc-folder']
-            repo = r['repo']
+            if 'local-path' in r:
+                res[r['alias']] = LocalResult(r['alias'],
+                                              GitSearch(r['local-path']).find_code(s, path=r['doc-folder']))
+            else:
+                query = s + ' path:%s' % r['doc-folder']
+                repo = r['repo']
 
-            res[r['alias']] = \
-                self._query_single(self.api.search.code,
-                                   query,
-                                   repo)
+                res[r['alias']] = \
+                    self._query_single(self.api.search.code,
+                                       query,
+                                       repo)
 
         return res
 

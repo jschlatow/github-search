@@ -79,6 +79,11 @@ class Tree:
                 subtree.add("📄 %s" % file.path)
 
     def _with_matches(self, alias, subtree, res):
+        if not hasattr(res, 'query_url'):
+            # res is LocalResult, list files instead of text matches
+            self._with_file_results(alias, subtree, res)
+            return
+
         for i in res.items():
             if hasattr(i, 'path'):
                 markdown = False
@@ -169,7 +174,8 @@ class Text:
         for alias, res in self.issues.items():
             if res.total_count():
                 self.console.print("Found %d [bold]issues[/bold] in [green]%s[/green]" % (res.total_count(), alias))
-                self.console.print("  view: [underline blue]%s[/underline blue]" % res.query_url())
+                if hasattr(res, 'query_url'):
+                    self.console.print("  view: [underline blue]%s[/underline blue]" % res.query_url())
 
         self.console.print()
 
@@ -180,7 +186,8 @@ class Text:
         for alias, res in self.pr.items():
             if res.total_count():
                 self.console.print("Found %d [bold]pull requests[/bold] in [green]%s[/green]" % (res.total_count(), alias))
-                self.console.print("  view: [underline blue]%s[/underline blue]" % res.query_url())
+                if hasattr(res, 'query_url'):
+                    self.console.print("  view: [underline blue]%s[/underline blue]" % res.query_url())
 
         self.console.print()
 
@@ -191,7 +198,8 @@ class Text:
         for alias, res in self.code.items():
             if res.total_count():
                 self.console.print("Found %d [bold]code[/bold] matches in [green]%s[/green]" % (res.total_count(), alias))
-                self.console.print("  view: [underline blue]%s[/underline blue]" % res.query_url())
+                if hasattr(res, 'query_url'):
+                    self.console.print("  view: [underline blue]%s[/underline blue]" % res.query_url())
 
         self.console.print()
 
@@ -215,7 +223,8 @@ class Text:
         for alias, res in self.docs.items():
             if res.total_count():
                 self.console.print("Found %d [bold]documentation[/bold] matches in [green]%s[/green]" % (res.total_count(), alias))
-                self.console.print("  view: [underline blue]%s[/underline blue]" % res.query_url())
+                if hasattr(res, 'query_url'):
+                    self.console.print("  view: [underline blue]%s[/underline blue]" % res.query_url())
 
         self.console.print()
 
